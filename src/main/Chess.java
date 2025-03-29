@@ -1,5 +1,7 @@
 package main;
 import main.ChessPiece.Pawn;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Chess {
 
@@ -24,9 +26,14 @@ public class Chess {
 			Pawn blackPawn8 = new Pawn(7, 1, "black");
 			
 			//TODO Spawn board and add pieces to it
+			ChessBoard board = new ChessBoard(8, 8);
+			board.addChessPiece(blackPawn1);
+			board.addChessPiece(blackPawn2);
+			System.out.println(board.getChessPieces());
 			
 			//TODO create GUI,
-			
+			GUI graphicalUserInterface = new GUI(board);
+			graphicalUserInterface.updateGUI();
 			
 			
 			
