@@ -10,14 +10,13 @@ public abstract class ChessPiece {
 		this.x = x;
 		this.y = y;
 		this.color = color;
+
 	}
 	
 	public String getColor() { 
 		return this.color;
 	}
-	
-	
-	
+
 	//For accessing the coordinates
 	public int getX() { 
 		return this.x;
@@ -87,4 +86,3 @@ public abstract class ChessPiece {
 	
 	
 }
-

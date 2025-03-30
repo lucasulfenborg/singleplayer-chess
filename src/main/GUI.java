@@ -69,19 +69,52 @@ public class GUI {
 	
 	//Method for drawing the pieces on the GUI
 	public void updateGUI() {
-		List<ChessPiece> piecesOnBoard = new ArrayList<>();
-		piecesOnBoard = board.getChessPieces();
-		
-		System.out.println(this.square_LabelArray.size());
-		
-		for (ChessPiece piece : piecesOnBoard) {
-			 int x = piece.getX();
-			 int y = piece.getY();
-			 
-			 
-		}
+	    List<ChessPiece> piecesOnBoard = board.getChessPieces();
+	    //gets the coordinates the piece should be in
+	    for (ChessPiece piece : piecesOnBoard) {
+	        int x = piece.getX();
+	        int y = piece.getY();
+	        
+	        // counts the squares in (GridLayout one by one)
+	        int index = y * board.getWidht() + x;
+	        
+	        //checks so the square exsists before putting piece in it
+	        if (index >= 0 && index < square_LabelArray.size()) {
+	            JLabel label = square_LabelArray.get(index);
+
+	            
+	            
+	            // chooses what symbol to spawn
+	            String symbol = "";
+	            if (piece instanceof ChessPiece.Pawn) {
+	                symbol = piece.getColor().equals("white") ? "\u265F" : "\u2659";
+	                
+	            } else if (piece instanceof ChessPiece.Knight) {
+	                symbol = piece.getColor().equals("white") ? "\u2658" : "\u265E";
+	                
+	            } else if (piece instanceof ChessPiece.Bishop) {
+	                symbol = piece.getColor().equals("white") ? "\u2657" : "\u265D";
+	                
+	            } else if (piece instanceof ChessPiece.Rook) {
+	                symbol = piece.getColor().equals("white") ? "\u2656" : "\u265C";
+	                
+	            } else if (piece instanceof ChessPiece.Queen) {
+	                symbol = piece.getColor().equals("white") ? "\u2655" : "\u265B";
+	                
+	            } else if (piece instanceof ChessPiece.King) {
+	                symbol = piece.getColor().equals("white") ? "\u2654" : "\u265A";
+	            }
+
+	            // Uppdatera JLabel med symbolen
+	            label.setText(symbol);
+	            ///label.setFont(new Font("Arial", Font.BOLD, 40)); // makes the piece bigger
+	            System.out.println("Placing " + symbol + " at index " + index + " (" + x + ", " + y + ")");
+
+	        }
+	    }
+	}
+
 	}
 	
 	
 
-}
