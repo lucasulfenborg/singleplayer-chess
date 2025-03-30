@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChessBoard {
-	private int widht;
-	private int height;
+	int widht;
+	int height;
 	private List<ChessPiece> chessPieces = new ArrayList<>();
 	
 	public ChessBoard(int widht, int height) {

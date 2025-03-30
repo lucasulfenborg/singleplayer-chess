@@ -5,22 +5,35 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import java.util.Dictionary;
-import java.util.Hashtable;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 public class GUI {
 
+	//Colors
+	private Color squareColor1 = new Color(118,150,86);
+	private Color squareColor2 = new Color(238,238,210);
+	private Color squareColor1_Highlited = new Color(168,219,117);
+	
+	
 	//Global JSWING components, accessible everywhere in the program
-	ChessBoard board;
-	JFrame frame;
-	List<JLabel> square_LabelArray;
+	private ChessBoard board;
+	private JFrame frame;
+	
+	
+	
+	public List<JLabel> square_LabelArray = new ArrayList<>();
+	public List<JPanel> square_PanelArray = new ArrayList<>();
+	
+	//Track which piece is currently selected
+	private ChessPiece selectedPiece = null;
+	
 	
 	public GUI(ChessBoard board) {
 		this.board = board;
 		
-		//Colors
-		Color squareColor1 = new Color(118,150,86);
-		Color squareColor2 = new Color(238,238,210);
+		
 		
 		int width = this.board.getWidht();
 		int height = this.board.getHeight();
@@ -33,11 +46,6 @@ public class GUI {
 		frame.setLayout(new GridLayout(height, width));
 		frame.setResizable(false);
 		
-		//List for accessing each square
-		this.square_LabelArray = new ArrayList<>();
-        Dictionary<String, Integer> d = new Hashtable<>();
-
-				
 		//Draw squares on the chess board
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
@@ -61,6 +69,7 @@ public class GUI {
 			    frame.add(panel);
 			    
 			    square_LabelArray.add(label);
+			    square_PanelArray.add(panel);
 			}
 		}
 
@@ -70,7 +79,19 @@ public class GUI {
 	//Method for drawing the pieces on the GUI
 	public void updateGUI() {
 	    List<ChessPiece> piecesOnBoard = board.getChessPieces();
-	    //gets the coordinates the piece should be in
+	    
+	    
+	    //Remove old labels
+	    for (JLabel label : square_LabelArray) {
+	    	label.setText("");
+	    	
+	    	// Remove all mouse listeners before updating the label
+	        for (MouseListener listener : label.getMouseListeners()) {
+	            label.removeMouseListener(listener);
+	        }
+	    }
+	    
+	    //Place out chess pieces
 	    for (ChessPiece piece : piecesOnBoard) {
 	        int x = piece.getX();
 	        int y = piece.getY();
@@ -84,37 +105,86 @@ public class GUI {
 
 	            
 	            
-	            // chooses what symbol to spawn
+	            // display a symbol representing the chessPiece
 	            String symbol = "";
 	            if (piece instanceof ChessPiece.Pawn) {
-	                symbol = piece.getColor().equals("white") ? "\u265F" : "\u2659";
+	                symbol = piece.getColor().equals("white") ? "\u2659" : "\u265F";
 	                
 	            } else if (piece instanceof ChessPiece.Knight) {
-	                symbol = piece.getColor().equals("white") ? "\u2658" : "\u265E";
+	                symbol = piece.getColor().equals("white") ? "\u265E" : "\u2658";
 	                
 	            } else if (piece instanceof ChessPiece.Bishop) {
-	                symbol = piece.getColor().equals("white") ? "\u2657" : "\u265D";
+	                symbol = piece.getColor().equals("white") ? "\u265D" : "\u2657";
 	                
 	            } else if (piece instanceof ChessPiece.Rook) {
-	                symbol = piece.getColor().equals("white") ? "\u2656" : "\u265C";
+	                symbol = piece.getColor().equals("white") ? "\u265C" : "\u2656";
 	                
 	            } else if (piece instanceof ChessPiece.Queen) {
-	                symbol = piece.getColor().equals("white") ? "\u2655" : "\u265B";
+	                symbol = piece.getColor().equals("white") ? "\u265B" : "\u2655";
 	                
 	            } else if (piece instanceof ChessPiece.King) {
-	                symbol = piece.getColor().equals("white") ? "\u2654" : "\u265A";
+	                symbol = piece.getColor().equals("white") ? "\u265A" : "\u2654";
 	            }
-
-	            // Uppdatera JLabel med symbolen
 	            label.setText(symbol);
-	            ///label.setFont(new Font("Arial", Font.BOLD, 40)); // makes the piece bigger
-	            System.out.println("Placing " + symbol + " at index " + index + " (" + x + ", " + y + ")");
-
-	        }
-	    }
-	}
-
+	            
+	            Font labelFont = label.getFont();
+	            label.setFont(labelFont.deriveFont(75f));	    
+	            
+	            //Make symbol clickable
+	            label.addMouseListener(new MouseAdapter() {
+	                @Override
+	                public void mouseClicked(MouseEvent e) {
+	                	
+	                	if (selectedPiece == piece) {
+	                		return;
+	                	}
+	                	
+	                	//Clear previous highlights
+	                	clearHighlights();
+	                	
+	                	// Set the new selected piece
+                        selectedPiece = piece;
+	                	
+	                	//Highlight possible moves
+	                	int[][] possibleMoves = piece.calculatePossibleMoves();
+	                	for (int[] move : possibleMoves) {
+	                		//System.out.println(move);
+	                		int targetX = move[0];
+	                		int targetY = move[1];
+	                		
+	                		int targetIndex = targetX + targetY * 8;
+	                        JPanel panel = square_PanelArray.get(targetIndex);
+	                        panel.setBackground(squareColor1_Highlited);
+	                				
+	                	}
+	                	System.out.println("clicked" + label.getText() );
+	                }
+	            });
+	        }  
+	    }  
 	}
 	
+	private void clearHighlights() {
+		//Draw squares on the chess board
+				for (int y = 0; y < this.board.height; y++) {
+					for (int x = 0; x < this.board.widht; x++) {
+						
+			            JPanel currentPanel = this.square_PanelArray.get(y * this.board.getWidht() + x); 
+
+						//Draw square
+						if ((x % 2 == 0 && y % 2 == 1) || (x % 2 == 1 && y % 2 == 0)) {
+							currentPanel.setBackground(this.squareColor1);
+						}
+						
+						else {
+							currentPanel.setBackground(this.squareColor2);
+						}
+						
+					}
+				}
+        
+    
+	}
+}	
 	
 

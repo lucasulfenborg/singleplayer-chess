@@ -33,18 +33,48 @@ public abstract class ChessPiece {
 	}
 	
 	public int[][] calculatePossibleMoves() {
-		//arrayOfPossibleMoves[0] = "a1";
-		//arrayOfPossibleMoves[0] = "a2"; etc
-
 		return arrayOfPossibleMoves;
+	}
+	
+	public void makeMove(int[] newLocation) {
+		
+		System.out.println("Moved to " + newLocation);
+		this.setCoordinates(newLocation[0], newLocation[1]);
 	}
 	
 	
 	//Define each type of ChessPiece
 	public static class Pawn extends ChessPiece {
+		private boolean hasMoved = false;
 		
 		public Pawn(int x, int y, String color) {
 			super(x, y, color);
+		}
+		
+		@Override
+		public int[][] calculatePossibleMoves() {
+		    int[][] possibleMoves = new int[2][2];
+
+		    // Determine the direction of movement based on the pawn's color
+		    int stepDirection = this.getColor().equals("white") ? -1 : 1; // 1 for white (up), -1 for black (down)
+		    
+		    // First move: Move 1 square forward
+		    int[] move1 = {this.getX(), this.getY() + stepDirection};
+		    possibleMoves[0] = move1;
+		    
+		    // Second move: Move 2 squares forward if the pawn hasn't moved yet
+		    if (!hasMoved) {
+		        int[] move2 = {this.getX(), this.getY() + (stepDirection * 2)}; // Move 2 squares forward
+		        possibleMoves[1] = move2;
+		    }
+
+		    return possibleMoves;
+		}
+		
+		@Override 
+		public void makeMove(int[] newLocation) {
+			this.hasMoved = true;
+			this.setCoordinates(newLocation[0], newLocation[1]);
 		}
 		
 	}

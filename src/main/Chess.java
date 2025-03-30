@@ -16,11 +16,15 @@ public class Chess {
 		Game.start();	
 	}
 	
+	
+	
+	
 	protected static class ChessGame {
+		
+		
+		
+		
 		protected void start() {
-			System.out.println("started");
-
-			//TODO Spawn chess pieces
 			//{0, 0} is top left of chess board
 			Pawn blackPawn1 = new Pawn(0, 1, "black");
 			Pawn blackPawn2 = new Pawn(1, 1, "black");
@@ -105,16 +109,19 @@ public class Chess {
 
 			board.addChessPiece(whiteKing1);
 			board.addChessPiece(blackKing1);
-
-			System.out.println(board.getChessPieces());
 			
-			//TODO create GUI,
+			//Create GUI and add board to it
 			GUI graphicalUserInterface = new GUI(board);
 			graphicalUserInterface.updateGUI();
 			
+			//Main loop
+			graphicalUserInterface.updateGUI();
 			
+			int[][] possiblemoves = (blackPawn4.calculatePossibleMoves());			
+			blackPawn4.makeMove(possiblemoves[1]);
+			graphicalUserInterface.updateGUI();
 			
-			System.out.println(blackPawn1.getX());
+
 			
 		}
 		
