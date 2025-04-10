@@ -113,16 +113,7 @@ public class Chess {
 			//Create GUI and add board to it
 			GUI graphicalUserInterface = new GUI(board);
 			graphicalUserInterface.updateGUI();
-			
-			//Main loop
-			graphicalUserInterface.updateGUI();
-			
-			int[][] possiblemoves = (blackPawn4.calculatePossibleMoves());			
-			blackPawn4.makeMove(possiblemoves[1]);
-			graphicalUserInterface.updateGUI();
-			
-
-			
+						
 		}
 		
 		
