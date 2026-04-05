@@ -1,118 +1,205 @@
 package main;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class ChessPiece {
-	private int x;
-	private int y;
-	private int[][] arrayOfPossibleMoves = {}; //Array of coordinates e.g. {(x,y), (x,y)}
-	private String color;
-	
-	public ChessPiece(int x, int y, String color) {
-		this.x = x;
-		this.y = y;
-		this.color = color;
+    private int x;
+    private int y;
+    private String color;
 
-	}
-	
-	public String getColor() { 
-		return this.color;
-	}
+    public ChessPiece(int x, int y, String color) {
+        this.x = x;
+        this.y = y;
+        this.color = color;
+    }
 
-	//For accessing the coordinates
-	public int getX() { 
-		return this.x;
-	}
-	
-	public int getY() { 
-		return this.y;
-	}
-	
+    public String getColor() {
+        return this.color;
+    }
 
-	public void setCoordinates(int x, int y) { //For changing the coordinates
-		this.x = x;
-		this.y = y;
-	}
-	
-	public int[][] calculatePossibleMoves() {
-		return arrayOfPossibleMoves;
-	}
-	
-	public void makeMove(int[] newLocation) {
-		
-		System.out.println("Moved to " + newLocation);
-		this.setCoordinates(newLocation[0], newLocation[1]);
-	}
-	
-	
-	//Define each type of ChessPiece
-	public static class Pawn extends ChessPiece {
-		private boolean hasMoved = false;
-		
-		public Pawn(int x, int y, String color) {
-			super(x, y, color);
-		}
-		
-		@Override
-		public int[][] calculatePossibleMoves() {
-		    int[][] possibleMoves = new int[2][2];
+    public int getX() {
+        return this.x;
+    }
 
-		    // Determine the direction of movement based on the pawn's color
-		    int stepDirection = this.getColor().equals("white") ? -1 : 1; // 1 for white (up), -1 for black (down)
-		    
-		    // First move: Move 1 square forward
-		    int[] move1 = {this.getX(), this.getY() + stepDirection};
-		    possibleMoves[0] = move1;
-		    
-		    // Second move: Move 2 squares forward if the pawn hasn't moved yet
-		    if (!hasMoved) {
-		        int[] move2 = {this.getX(), this.getY() + (stepDirection * 2)}; // Move 2 squares forward
-		        possibleMoves[1] = move2;
-		    }
+    public int getY() {
+        return this.y;
+    }
 
-		    return possibleMoves;
-		}
-		
-		@Override 
-		public void makeMove(int[] newLocation) {
-			this.hasMoved = true;
-			this.setCoordinates(newLocation[0], newLocation[1]);
-		}
-		
-	}
-	
-	public static class Knight extends ChessPiece {
-		
-		public Knight(int x, int y, String color) {
-			super(x, y, color);
-		}
-	}
-	
-	public static class Bishop extends ChessPiece {
-		
-		public Bishop(int x, int y, String color) {
-			super(x, y, color);
-		}
-	}
+    public void setCoordinates(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
 
-	public static class Rook extends ChessPiece {
-		
-		public Rook(int x, int y, String color) {
-			super(x, y, color);
-		}
-	}
-	
-	public static class Queen extends ChessPiece {
-			
-			public Queen(int x, int y, String color) {
-				super(x, y, color);
-			}
-		}
-	
-	public static class King extends ChessPiece {
-			
-			public King(int x, int y, String color) {
-				super(x, y, color);
-			}
-	}
-	
-	
+    public abstract List<int[]> calculatePossibleMoves();
+
+    public void makeMove(int[] newLocation) {
+        this.setCoordinates(newLocation[0], newLocation[1]);
+    }
+
+    // =========================
+    // PIECES
+    // =========================
+
+    public static class Pawn extends ChessPiece {
+        private boolean hasMoved = false;
+
+        public Pawn(int x, int y, String color) {
+            super(x, y, color);
+        }
+
+        @Override
+        public List<int[]> calculatePossibleMoves() {
+            List<int[]> moves = new ArrayList<>();
+
+            int direction = getColor().equals("white") ? -1 : 1;
+
+            // Move forward 1
+            moves.add(new int[]{getX(), getY() + direction});
+
+            // Move forward 2 if first move
+            if (!hasMoved) {
+                moves.add(new int[]{getX(), getY() + (2 * direction)});
+            }
+
+            return moves;
+        }
+
+        @Override
+        public void makeMove(int[] newLocation) {
+            hasMoved = true;
+            super.makeMove(newLocation);
+        }
+    }
+
+    public static class Knight extends ChessPiece {
+
+        public Knight(int x, int y, String color) {
+            super(x, y, color);
+        }
+
+        @Override
+        public List<int[]> calculatePossibleMoves() {
+            List<int[]> moves = new ArrayList<>();
+
+            int x = getX();
+            int y = getY();
+
+            int[][] offsets = {
+                {1, 2}, {2, 1}, {-1, 2}, {-2, 1},
+                {1, -2}, {2, -1}, {-1, -2}, {-2, -1}
+            };
+
+            for (int[] o : offsets) {
+                moves.add(new int[]{x + o[0], y + o[1]});
+            }
+
+            return moves;
+        }
+    }
+
+    public static class Bishop extends ChessPiece {
+
+        public Bishop(int x, int y, String color) {
+            super(x, y, color);
+        }
+
+        @Override
+        public List<int[]> calculatePossibleMoves() {
+            List<int[]> moves = new ArrayList<>();
+
+            int x = getX();
+            int y = getY();
+
+            // Diagonals (no collision yet)
+            for (int i = 1; i < 8; i++) {
+                moves.add(new int[]{x + i, y + i});
+                moves.add(new int[]{x - i, y + i});
+                moves.add(new int[]{x + i, y - i});
+                moves.add(new int[]{x - i, y - i});
+            }
+
+            return moves;
+        }
+    }
+
+    public static class Rook extends ChessPiece {
+
+        public Rook(int x, int y, String color) {
+            super(x, y, color);
+        }
+
+        @Override
+        public List<int[]> calculatePossibleMoves() {
+            List<int[]> moves = new ArrayList<>();
+
+            int x = getX();
+            int y = getY();
+
+            for (int i = 1; i < 8; i++) {
+                moves.add(new int[]{x + i, y});
+                moves.add(new int[]{x - i, y});
+                moves.add(new int[]{x, y + i});
+                moves.add(new int[]{x, y - i});
+            }
+
+            return moves;
+        }
+    }
+
+    public static class Queen extends ChessPiece {
+
+        public Queen(int x, int y, String color) {
+            super(x, y, color);
+        }
+
+        @Override
+        public List<int[]> calculatePossibleMoves() {
+            List<int[]> moves = new ArrayList<>();
+
+            int x = getX();
+            int y = getY();
+
+            for (int i = 1; i < 8; i++) {
+                // Rook moves
+                moves.add(new int[]{x + i, y});
+                moves.add(new int[]{x - i, y});
+                moves.add(new int[]{x, y + i});
+                moves.add(new int[]{x, y - i});
+
+                // Bishop moves
+                moves.add(new int[]{x + i, y + i});
+                moves.add(new int[]{x - i, y + i});
+                moves.add(new int[]{x + i, y - i});
+                moves.add(new int[]{x - i, y - i});
+            }
+
+            return moves;
+        }
+    }
+
+    public static class King extends ChessPiece {
+
+        public King(int x, int y, String color) {
+            super(x, y, color);
+        }
+
+        @Override
+        public List<int[]> calculatePossibleMoves() {
+            List<int[]> moves = new ArrayList<>();
+
+            int x = getX();
+            int y = getY();
+
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dy = -1; dy <= 1; dy++) {
+                    if (dx != 0 || dy != 0) {
+                        moves.add(new int[]{x + dx, y + dy});
+                    }
+                }
+            }
+
+            return moves;
+        }
+    }
 }
